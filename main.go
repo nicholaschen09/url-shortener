@@ -57,8 +57,23 @@ func (s *URLStore) Get(shortURL string) (string, bool) {
 func main() {
 	store := NewURLStore()
 
+	// CORS middleware
+	setCORS := func(w http.ResponseWriter, r *http.Request) bool {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return true
+		}
+		return false
+	}
+
 	// Handle URL shortening
 	http.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
+		if setCORS(w, r) {
+			return
+		}
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -81,6 +96,7 @@ func main() {
 
 	// Handle redirects
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		setCORS(w, r)
 		if r.URL.Path == "/" {
 			http.ServeFile(w, r, "index.html")
 			return
