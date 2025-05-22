@@ -2,24 +2,33 @@ package main
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
-	"sync"
 )
 
-// URLStore represents our in-memory URL storage
-type URLStore struct {
-	urls map[string]string
-	mu   sync.RWMutex
+// PostgresStore represents our PostgreSQL URL storage
+type PostgresStore struct {
+	db *sql.DB
 }
 
-// NewURLStore creates a new URLStore instance
-func NewURLStore() *URLStore {
-	return &URLStore{
-		urls: make(map[string]string),
+// NewPostgresStore creates a new PostgresStore instance
+func NewPostgresStore(connStr string) (*PostgresStore, error) {
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		return nil, err
 	}
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+	// Create the urls table if it doesn't exist
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS urls (short_code TEXT PRIMARY KEY, original_url TEXT)`)
+	if err != nil {
+		return nil, err
+	}
+	return &PostgresStore{db: db}, nil
 }
 
 // generateShortURL creates a random 6-character string
@@ -33,29 +42,36 @@ func generateShortURL() (string, error) {
 }
 
 // Put stores a URL and returns its short version
-func (s *URLStore) Put(url string) (string, error) {
+func (s *PostgresStore) Put(url string) (string, error) {
 	shortURL, err := generateShortURL()
 	if err != nil {
 		return "", err
 	}
-
-	s.mu.Lock()
-	s.urls[shortURL] = url
-	s.mu.Unlock()
-
+	_, err = s.db.Exec("INSERT INTO urls (short_code, original_url) VALUES ($1, $2)", shortURL, url)
+	if err != nil {
+		return "", err
+	}
 	return shortURL, nil
 }
 
 // Get retrieves the original URL for a given short URL
-func (s *URLStore) Get(shortURL string) (string, bool) {
-	s.mu.RLock()
-	url, exists := s.urls[shortURL]
-	s.mu.RUnlock()
-	return url, exists
+func (s *PostgresStore) Get(shortURL string) (string, bool) {
+	var originalURL string
+	err := s.db.QueryRow("SELECT original_url FROM urls WHERE short_code = $1", shortURL).Scan(&originalURL)
+	if err != nil {
+		return "", false
+	}
+	return originalURL, true
 }
 
 func main() {
-	store := NewURLStore()
+	// Replace with your actual PostgreSQL connection string
+	connStr := "postgres://username:password@localhost:5432/urlshortener?sslmode=disable"
+	store, err := NewPostgresStore(connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer store.db.Close()
 
 	mux := http.NewServeMux()
 

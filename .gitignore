@@ -9,3 +9,13 @@ dist
 
 # build
 build
+
+# .env
+.env
+
+# go
+go.sum
+go.mod
+
+# postgres
+postgres.sql
