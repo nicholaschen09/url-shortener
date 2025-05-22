@@ -60,6 +60,10 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
+		// CORS headers for every response
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
@@ -88,6 +92,14 @@ func main() {
 	})
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// CORS headers for every response
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 		if r.URL.Path == "/" {
 			http.ServeFile(w, r, "index.html")
 			return
