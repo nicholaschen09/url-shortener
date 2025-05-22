@@ -57,21 +57,11 @@ func (s *URLStore) Get(shortURL string) (string, bool) {
 func main() {
 	store := NewURLStore()
 
-	// CORS middleware
-	setCORS := func(w http.ResponseWriter, r *http.Request) bool {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
-			return true
-		}
-		return false
-	}
-
-	// Handle URL shortening
-	http.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
-		if setCORS(w, r) {
 			return
 		}
 		if r.Method != http.MethodPost {
@@ -94,9 +84,7 @@ func main() {
 		fmt.Fprintf(w, "Short URL: http://localhost:8080/%s", shortURL)
 	})
 
-	// Handle redirects
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		setCORS(w, r)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
 			http.ServeFile(w, r, "index.html")
 			return
@@ -112,6 +100,18 @@ func main() {
 		http.Redirect(w, r, longURL, http.StatusMovedPermanently)
 	})
 
+	// CORS middleware wraps the mux
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		mux.ServeHTTP(w, r)
+	})
+
 	fmt.Println("Server starting on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
-} 
+	log.Fatal(http.ListenAndServe(":8080", handler))
+}
