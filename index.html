@@ -10,7 +10,24 @@
 
 <body class="bg-[#f8f6ef] min-h-screen font-sans">
     <div class="flex flex-col items-center justify-center min-h-screen">
-        <div class="w-full max-w-3xl bg-white rounded-2xl border-2 border-gray-200 p-0 mt-8">
+        <div class="w-full max-w-3xl bg-white rounded-2xl border-2 border-gray-200 p-0 mt-8 relative">
+            <!-- Info Icon and Popup -->
+            <button id="infoBtn" type="button"
+                class="absolute top-4 right-4 z-10 bg-white border border-gray-300 rounded-full p-2 shadow hover:bg-gray-100 focus:outline-none"
+                aria-label="Info">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0-4h.01" />
+                </svg>
+            </button>
+            <div id="infoPopup"
+                class="hidden absolute top-12 right-4 w-72 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-gray-700 text-sm z-20"
+                style="pointer-events:auto;">
+                <strong>What does this do?</strong>
+                <p class="mt-2">This tool lets you create short, memorable links for your long URLs. Paste a long URL,
+                    click "Shorten URL," and get a short link you can easily share!</p>
+            </div>
             <!-- Top border line -->
             <div class="border-b-2 border-gray-200 p-8 pb-4">
                 <h1 class="text-4xl font-extrabold text-gray-900 mb-2">URL Shortener</h1>
@@ -63,6 +80,9 @@
         const errorDiv = document.getElementById('error');
         const successMessage = document.getElementById('successMessage');
         const clearUrlBtn = document.getElementById('clearUrlBtn');
+        const infoBtn = document.getElementById('infoBtn');
+        const infoPopup = document.getElementById('infoPopup');
+        let infoPopupVisible = false;
 
         function showResult(shortUrl) {
             if (shortUrl && /^https?:\/\//.test(shortUrl)) {
@@ -132,6 +152,28 @@
             if (savedUrl) urlInput.value = savedUrl;
             const savedResult = localStorage.getItem('shortener_last_result');
             if (savedResult) showResult(savedResult);
+        });
+
+        // Info icon popup logic
+        infoBtn.addEventListener('mouseenter', () => {
+            infoPopup.classList.remove('hidden');
+        });
+        infoBtn.addEventListener('mouseleave', () => {
+            if (!infoPopupVisible) infoPopup.classList.add('hidden');
+        });
+        infoPopup.addEventListener('mouseenter', () => {
+            infoPopupVisible = true;
+            infoPopup.classList.remove('hidden');
+        });
+        infoPopup.addEventListener('mouseleave', () => {
+            infoPopupVisible = false;
+            infoPopup.classList.add('hidden');
+        });
+
+        // Show on click/tap (mobile)
+        infoBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            infoPopup.classList.toggle('hidden');
         });
     </script>
 </body>
