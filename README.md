@@ -31,7 +31,7 @@ A modern, mobile-friendly URL shortener built with Go (backend) and Tailwind CSS
 
 #### Backend
 - Deploy `main.go` to a platform that supports Go web servers (Railway, Render, Fly.io, etc.)
-- Make sure the backend is accessible at a public URL (e.g., `https://your-app.up.railway.app`)
+- Make sure the backend is accessible at a public URL (e.g., `https://url-shortener-production-8c28.up.railway.app/`)
 - CORS is enabled by default
 
 #### Frontend
