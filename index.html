@@ -91,7 +91,8 @@
             errorDiv.classList.add('hidden');
             resultDiv.classList.add('hidden');
             try {
-                const response = await fetch('/shorten', {
+                const API_BASE = 'https://url-shortener-production-2d6f.up.railway.app';
+                const response = await fetch(`${API_BASE}/shorten`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: `url=${encodeURIComponent(url)}`
