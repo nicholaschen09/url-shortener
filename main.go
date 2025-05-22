@@ -65,23 +65,26 @@ func main() {
 			return
 		}
 		if r.Method != http.MethodPost {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			fmt.Fprint(w, "Method not allowed")
 			return
 		}
 
 		longURL := r.FormValue("url")
 		if longURL == "" {
-			http.Error(w, "URL is required", http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, "URL is required")
 			return
 		}
 
 		shortURL, err := store.Put(longURL)
 		if err != nil {
-			http.Error(w, "Error generating short URL", http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "Error generating short URL")
 			return
 		}
 
-		fmt.Fprintf(w, "Short URL: http://localhost:8080/%s", shortURL)
+		fmt.Fprintf(w, "Short URL: https://url-shortener-production-2d6f.up.railway.app/%s", shortURL)
 	})
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +96,8 @@ func main() {
 		shortURL := r.URL.Path[1:] // Remove leading slash
 		longURL, exists := store.Get(shortURL)
 		if !exists {
-			http.Error(w, "URL not found", http.StatusNotFound)
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "URL not found")
 			return
 		}
 
@@ -112,6 +116,6 @@ func main() {
 		mux.ServeHTTP(w, r)
 	})
 
-	fmt.Println("Server starting on http://localhost:8080")
+	fmt.Println("Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", handler))
 }
