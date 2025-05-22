@@ -5,421 +5,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>URL Shortener</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --background: #f8fafc;
-            --text: #1e293b;
-            --border: #e2e8f0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background);
-            color: var(--text);
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 750px;
-            padding: 2.5rem 2.5rem 2rem 2.5rem;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            margin: 1rem;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .header p {
-            color: #64748b;
-            font-size: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: stretch;
-            gap: 0;
-        }
-
-        input[type="url"] {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 0.5rem 0 0 0.5rem;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            background: white;
-            border-right: none;
-        }
-
-        input[type="url"]:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        input[type="url"]::placeholder {
-            color: #94a3b8;
-        }
-
-        button {
-            width: 100%;
-            padding: 0.875rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        #result {
-            margin-top: 1.5rem;
-            padding: 1.25rem 1.5rem;
-            border-radius: 0.75rem;
-            background: #f1f5f9;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-
-        #result.show {
-            display: block;
-        }
-
-        #result p {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: nowrap;
-            width: 100%;
-        }
-
-        #result .short-url {
-            color: var(--primary-color);
-            font-weight: 500;
-            flex: 1 1 auto;
-            min-width: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        #result .short-url a {
-            color: inherit;
-            text-decoration: underline;
-            flex: 1 1 auto;
-            min-width: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: inline-block;
-        }
-
-        #result .copy-button {
-            flex-shrink: 0;
-            margin-left: 0.5rem;
-        }
-
-        .error {
-            color: #dc2626;
-            background: #fee2e2;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-
-        .error.show {
-            display: block;
-        }
-
-        .loading {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-        }
-
-        .loading.show {
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .copy-button {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 0.25rem;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .copy-button:hover {
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        .copy-button svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .success-message {
-            color: #059669;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .clear-button {
-            background: #e2e8f0;
-            border: 2px solid var(--border);
-            border-left: none;
-            color: #64748b;
-            padding: 0 1.1rem;
-            border-radius: 0 0.5rem 0.5rem 0;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-        }
-
-        .clear-button:hover {
-            background: #cbd5e1;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>URL Shortener</h1>
-            <p>Create short, memorable links for your long URLs</p>
-        </div>
-        <form id="shortenForm">
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <input type="url" id="url" placeholder="Paste your long URL here" required autocomplete="off">
-                    <button type="button" class="clear-button" id="clearUrlBtn" title="Clear URL">Clear</button>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-2xl">
+        <h1 class="text-3xl font-bold text-center mb-2">URL Shortener</h1>
+        <p class="text-center text-gray-500 mb-8">Create short, memorable links for your long URLs</p>
+        <form id="shortenForm" class="flex flex-col gap-4">
+            <div class="flex gap-2">
+                <input type="url" id="url" placeholder="Paste your long URL here" required autocomplete="off"
+                    class="flex-1 rounded-l-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <button type="button" id="clearUrlBtn"
+                    class="rounded-r-lg bg-gray-200 px-4 py-2 text-gray-600 hover:bg-gray-300 transition">Clear</button>
+            </div>
+            <button type="submit"
+                class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Shorten
+                URL</button>
+        </form>
+        <div id="result" class="mt-6 hidden">
+            <div class="flex items-center bg-gray-100 rounded-lg px-6 py-4">
+                <span class="text-lg font-medium mr-2">Your shortened URL:</span>
+                <div class="flex items-center flex-1 min-w-0">
+                    <a id="shortUrlLink" href="#" target="_blank" rel="noopener"
+                        class="text-blue-600 underline truncate"></a>
+                    <button id="copyBtn" class="ml-3 p-2 rounded hover:bg-blue-100 transition"
+                        title="Copy to clipboard">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5 text-blue-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <button type="submit">
-                <span class="loading" id="loading"></span>
-                <span>Shorten URL</span>
-            </button>
-        </form>
-        <div id="result"></div>
-        <div class="error" id="error"></div>
-        <div class="success-message" id="successMessage">URL copied to clipboard!</div>
+        </div>
+        <div id="error" class="hidden mt-4 text-red-600 text-center"></div>
+        <div id="successMessage" class="hidden mt-2 text-green-600 text-center">URL copied to clipboard!</div>
     </div>
-
     <script>
         const form = document.getElementById('shortenForm');
         const urlInput = document.getElementById('url');
         const resultDiv = document.getElementById('result');
+        const shortUrlLink = document.getElementById('shortUrlLink');
+        const copyBtn = document.getElementById('copyBtn');
         const errorDiv = document.getElementById('error');
-        const loadingSpinner = document.getElementById('loading');
         const successMessage = document.getElementById('successMessage');
         const clearUrlBtn = document.getElementById('clearUrlBtn');
 
-        // LocalStorage keys
-        const LS_URL = 'shortener_last_url';
-        const LS_RESULT = 'shortener_last_result';
-
-        function showLoading() {
-            loadingSpinner.classList.add('show');
-            form.querySelector('button[type="submit"]').disabled = true;
-        }
-
-        function hideLoading() {
-            loadingSpinner.classList.remove('show');
-            form.querySelector('button[type="submit"]').disabled = false;
-        }
-
-        function showError(message) {
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-            resultDiv.classList.remove('show');
-            setTimeout(() => {
-                errorDiv.classList.remove('show');
-            }, 5000);
-        }
-
         function showResult(shortUrl) {
             if (shortUrl && /^https?:\/\//.test(shortUrl)) {
-                resultDiv.innerHTML = `
-                    <p>
-                        <span style="flex-shrink:0; margin-right:0.5rem;">Your shortened URL:</span>
-                        <span class="short-url" title="${shortUrl}">
-                            <a href="${shortUrl}" target="_blank" rel="noopener">${shortUrl}</a>
-                        </span>
-                    </p>
-                `;
-                resultDiv.classList.add('show');
-                localStorage.setItem(LS_RESULT, shortUrl);
+                shortUrlLink.href = shortUrl;
+                shortUrlLink.textContent = shortUrl;
+                resultDiv.classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+                localStorage.setItem('shortener_last_result', shortUrl);
             } else {
-                resultDiv.innerHTML = `<p style='color:#dc2626;'>No valid short URL found in response.</p>`;
-                resultDiv.classList.add('show');
-                localStorage.removeItem(LS_RESULT);
+                resultDiv.classList.add('hidden');
+                errorDiv.textContent = 'No valid short URL found in response.';
+                errorDiv.classList.remove('hidden');
+                localStorage.removeItem('shortener_last_result');
             }
         }
 
-        async function copyToClipboard(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                successMessage.classList.add('show');
-                setTimeout(() => {
-                    successMessage.classList.remove('show');
-                }, 2000);
-            } catch (err) {
-                showError('Failed to copy to clipboard');
-            }
-        }
+        copyBtn.addEventListener('click', () => {
+            const url = shortUrlLink.href;
+            navigator.clipboard.writeText(url).then(() => {
+                successMessage.classList.remove('hidden');
+                setTimeout(() => successMessage.classList.add('hidden'), 2000);
+            });
+        });
 
-        // Clear URL input and result
         clearUrlBtn.addEventListener('click', () => {
             urlInput.value = '';
-            localStorage.removeItem(LS_URL);
-            resultDiv.classList.remove('show');
-            localStorage.removeItem(LS_RESULT);
-            showResult('');
+            localStorage.removeItem('shortener_last_url');
+            resultDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+            localStorage.removeItem('shortener_last_result');
         });
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const url = urlInput.value;
-
-            showLoading();
-            errorDiv.classList.remove('show');
-            resultDiv.classList.remove('show');
-
-            // Save input to localStorage
-            localStorage.setItem(LS_URL, url);
-
+            localStorage.setItem('shortener_last_url', url);
+            errorDiv.classList.add('hidden');
+            resultDiv.classList.add('hidden');
             try {
                 const response = await fetch('/shorten', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: `url=${encodeURIComponent(url)}`
                 });
-
                 if (response.ok) {
                     const text = await response.text();
-                    console.log('Backend response:', text);
-                    // Extract the URL from the backend response robustly
                     let match = text.match(/https?:\/\/[^\s]+/);
                     let shortUrl = match ? match[0] : '';
-                    console.log('Extracted shortUrl:', shortUrl);
                     showResult(shortUrl);
                 } else {
                     const errorText = await response.text();
-                    showError(errorText || 'Failed to shorten URL');
-                    localStorage.removeItem(LS_RESULT);
+                    errorDiv.textContent = errorText || 'Failed to shorten URL';
+                    errorDiv.classList.remove('hidden');
+                    localStorage.removeItem('shortener_last_result');
                 }
-            } catch (error) {
-                showError('Network error. Please try again.');
-                localStorage.removeItem(LS_RESULT);
-            } finally {
-                hideLoading();
+            } catch {
+                errorDiv.textContent = 'Network error. Please try again.';
+                errorDiv.classList.remove('hidden');
+                localStorage.removeItem('shortener_last_result');
             }
         });
 
-        // Restore state from localStorage on page load
+        // Restore state from localStorage
         window.addEventListener('DOMContentLoaded', () => {
-            const savedUrl = localStorage.getItem(LS_URL);
-            if (savedUrl) {
-                urlInput.value = savedUrl;
-            }
-            const savedResult = localStorage.getItem(LS_RESULT);
-            if (savedResult && savedResult.trim() !== "") {
-                showResult(savedResult);
-            }
+            const savedUrl = localStorage.getItem('shortener_last_url');
+            if (savedUrl) urlInput.value = savedUrl;
+            const savedResult = localStorage.getItem('shortener_last_result');
+            if (savedResult) showResult(savedResult);
         });
     </script>
 </body>
