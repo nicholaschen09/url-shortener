@@ -5,64 +5,304 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>URL Shortener</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            margin: 1rem;
+        }
+
+        .header {
             text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
 
         input[type="url"] {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        input[type="url"]::placeholder {
+            color: #94a3b8;
         }
 
         button {
-            padding: 10px 20px;
-            background-color: #007bff;
+            width: 100%;
+            padding: 0.875rem;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         #result {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: #f1f5f9;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        #result.show {
+            display: block;
+        }
+
+        #result p {
+            margin: 0;
+            word-break: break-all;
+        }
+
+        #result .short-url {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .error {
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading.show {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .copy-button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0.25rem;
+            margin-left: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .success-message {
+            color: #059669;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>URL Shortener</h1>
+        <div class="header">
+            <h1>URL Shortener</h1>
+            <p>Create short, memorable links for your long URLs</p>
+        </div>
         <form id="shortenForm">
-            <input type="url" id="url" placeholder="Enter your URL here" required>
-            <br>
-            <button type="submit">Shorten URL</button>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="url" id="url" placeholder="Paste your long URL here" required>
+                </div>
+            </div>
+            <button type="submit">
+                <span class="loading" id="loading"></span>
+                <span>Shorten URL</span>
+            </button>
         </form>
         <div id="result"></div>
+        <div class="error" id="error"></div>
+        <div class="success-message" id="successMessage">URL copied to clipboard!</div>
     </div>
 
     <script>
-        document.getElementById('shortenForm').addEventListener('submit', async (e) => {
+        const form = document.getElementById('shortenForm');
+        const urlInput = document.getElementById('url');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+        const loadingSpinner = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+
+        function showLoading() {
+            loadingSpinner.classList.add('show');
+            form.querySelector('button').disabled = true;
+        }
+
+        function hideLoading() {
+            loadingSpinner.classList.remove('show');
+            form.querySelector('button').disabled = false;
+        }
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            resultDiv.classList.remove('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function showResult(shortUrl) {
+            resultDiv.innerHTML = `
+                <p>Your shortened URL: 
+                    <span class="short-url">${shortUrl}</span>
+                    <button class="copy-button" onclick="copyToClipboard('${shortUrl}')">
+                        📋
+                    </button>
+                </p>
+            `;
+            resultDiv.classList.add('show');
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                successMessage.classList.add('show');
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 2000);
+            } catch (err) {
+                showError('Failed to copy to clipboard');
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const url = document.getElementById('url').value;
-            const resultDiv = document.getElementById('result');
+            const url = urlInput.value;
+
+            showLoading();
+            errorDiv.classList.remove('show');
+            resultDiv.classList.remove('show');
 
             try {
                 const response = await fetch('/shorten', {
@@ -75,12 +315,15 @@
 
                 if (response.ok) {
                     const text = await response.text();
-                    resultDiv.innerHTML = `<p>${text}</p>`;
+                    showResult(text.replace('Short URL: ', ''));
                 } else {
-                    resultDiv.innerHTML = `<p style="color: red;">Error: ${response.statusText}</p>`;
+                    const errorText = await response.text();
+                    showError(errorText || 'Failed to shorten URL');
                 }
             } catch (error) {
-                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                showError('Network error. Please try again.');
+            } finally {
+                hideLoading();
             }
         });
     </script>
