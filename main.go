@@ -88,7 +88,7 @@ func main() {
 			return
 		}
 
-		fmt.Fprintf(w, "Short URL: https://url-shortener-production-2d6f.up.railway.app/%s", shortURL)
+		fmt.Fprintf(w, "Short URL: https://url-shortener-production-8c28.up.railway.app/%s", shortURL)
 	})
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
