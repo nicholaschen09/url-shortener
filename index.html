@@ -9,26 +9,26 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen flex items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-2xl">
-        <h1 class="text-3xl font-bold text-center mb-2">URL Shortener</h1>
-        <p class="text-center text-gray-500 mb-8">Create short, memorable links for your long URLs</p>
+    <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-8 w-full max-w-md mx-2">
+        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-2">URL Shortener</h1>
+        <p class="text-center text-gray-500 mb-6">Create short, memorable links for your long URLs</p>
         <form id="shortenForm" class="flex flex-col gap-4">
-            <div class="flex gap-2">
+            <div class="flex flex-col sm:flex-row gap-2">
                 <input type="url" id="url" placeholder="Paste your long URL here" required autocomplete="off"
-                    class="flex-1 rounded-l-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    class="flex-1 rounded-lg sm:rounded-l-lg sm:rounded-r-none border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <button type="button" id="clearUrlBtn"
-                    class="rounded-r-lg bg-gray-200 px-4 py-2 text-gray-600 hover:bg-gray-300 transition">Clear</button>
+                    class="rounded-lg sm:rounded-r-lg sm:rounded-l-none bg-gray-200 px-4 py-2 text-gray-600 hover:bg-gray-300 transition">Clear</button>
             </div>
             <button type="submit"
                 class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Shorten
                 URL</button>
         </form>
         <div id="result" class="mt-6 hidden">
-            <div class="flex items-center bg-gray-100 rounded-lg px-6 py-4">
-                <span class="text-lg font-medium mr-2">Your shortened URL:</span>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center bg-gray-100 rounded-lg px-4 sm:px-6 py-4">
+                <span class="text-base sm:text-lg font-medium mb-2 sm:mb-0 sm:mr-2">Your shortened URL:</span>
                 <div class="flex items-center flex-1 min-w-0">
                     <a id="shortUrlLink" href="#" target="_blank" rel="noopener"
-                        class="text-blue-600 underline truncate"></a>
+                        class="text-blue-600 underline truncate max-w-full"></a>
                     <button id="copyBtn" class="ml-3 p-2 rounded hover:bg-blue-100 transition"
                         title="Copy to clipboard">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
